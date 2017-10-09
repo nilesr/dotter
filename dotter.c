@@ -1,6 +1,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-#define STBI_ONLY_PNG 1
+#define STBI_ONLY_PNG
+#define _GNU_SOURCE
 #include "stb/stb_image_write.h"
 #include "stb/stb_image.h"
 #include <inttypes.h>
@@ -73,6 +74,7 @@ uint8_t* copy(uint8_t* source, uint8_t* dest, int width, box_t box) {
 }
 
 int main(int argc, char** argv) {
+   bool make_slices = false;
    srand(time(NULL));
    char* source_filename = "Pictures/2hu.png";
    char* output_filename = "out.png";
@@ -92,6 +94,9 @@ int main(int argc, char** argv) {
       radius = atoi(argv[4]);
       assert(radius != 0);
    }
+   if (argc > 5) {
+      make_slices = true;
+   }
    time_t start = time(NULL);
    int width, height, n;
    uint8_t* source = stbi_load(source_filename, &width, &height, &n, 3);
@@ -100,6 +105,7 @@ int main(int argc, char** argv) {
    uint8_t* img2 = malloc(width * height * 3);
    time_t now;
    int kept = 0;
+   int slice = 0;
    for (int i = 0; i < iterations; i++) {
       int x = rand() % width;
       int y = rand() % height;
@@ -114,13 +120,23 @@ int main(int argc, char** argv) {
       } else {
          copy(img2, img1, width, box);
       }
-      if (i % 10000 == 1 && time(NULL) != now) {
-         now = time(NULL);
-         time_t elapsed = now - start;
-         double percent = ((double) i) / iterations;
-         double total = elapsed / percent;
-         double eta = total - elapsed;
-         printf("%3.3f%% complete, eta = %3.3f seconds\n", 100 * percent, eta);
+      if (i % 10000 == 1) {
+         if (make_slices) {
+            char* name;
+            slice++;
+            asprintf(&name, "out-%4d.png", slice);
+            assert(name);
+            for (char* c = name; *c; c++) { if (*c == ' ') *c = '0'; }
+            stbi_write_png(name, width, height, 3, img2, width * 3);
+         }
+         if (time(NULL) != now) {
+            now = time(NULL);
+            time_t elapsed = now - start;
+            double percent = ((double) i) / iterations;
+            double total = elapsed / percent;
+            double eta = total - elapsed;
+            printf("%3.3f%% complete, eta = %3.3f seconds\n", 100 * percent, eta);
+         }
       }
    }
    stbi_image_free(source);
