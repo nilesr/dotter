@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
    assert(source);
    uint8_t* img1 = malloc(width * height * 3);
    uint8_t* img2 = malloc(width * height * 3);
+   time_t now;
    for (int i = 0; i < iterations; i++) {
       int x = rand() % width;
       int y = rand() % height;
@@ -103,8 +104,9 @@ int main(int argc, char** argv) {
       } else {
          copy(img2, img1, width, box);
       }
-      if (i % 1000 == 1) {
-         time_t elapsed = time(NULL) - start;
+      if (i % 10000 == 1 && time(NULL) != now) {
+         now = time(NULL);
+         time_t elapsed = now - start;
          double percent = ((double) i) / iterations;
          double total = elapsed / percent;
          double eta = total - elapsed;
