@@ -66,10 +66,10 @@ uint8_t* random_color(uint8_t* image, int width, int height) {
    int y = rand() % height;
    return getpixel(image, x, y, width);
 }
-uint8_t* copy(uint8_t* source, int width, int height) {
-   uint8_t* result = malloc(width * height * 3);
-   memcpy(result, source, width * height * 3);
-   return result;
+uint8_t* copy(uint8_t* source, uint8_t* dest, int width, box_t box) {
+   for (int y = box.y1; y < box.y2; y++) {
+      memcpy(getpixel(dest, box.x1, y, width), getpixel(source, box.x1, y, width), 3 * (box.x2 - box.x1));
+   }
 }
 
 int main(int argc, char** argv) {
@@ -99,11 +99,9 @@ int main(int argc, char** argv) {
       double newdist = dist(source, img1, box, width);
       double olddist = dist(source, img2, box, width);
       if (newdist < olddist) {
-         free(img2);
-         img2 = copy(img1, width, height);
+         copy(img1, img2, width, box);
       } else {
-         free(img1);
-         img1 = copy(img2, width, height);
+         copy(img2, img1, width, box);
       }
       if (i % 1000 == 1) {
          time_t elapsed = time(NULL) - start;
