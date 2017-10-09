@@ -99,6 +99,7 @@ int main(int argc, char** argv) {
    uint8_t* img1 = malloc(width * height * 3);
    uint8_t* img2 = malloc(width * height * 3);
    time_t now;
+   int kept = 0;
    for (int i = 0; i < iterations; i++) {
       int x = rand() % width;
       int y = rand() % height;
@@ -108,6 +109,7 @@ int main(int argc, char** argv) {
       double newdist = dist(source, img1, box, width);
       double olddist = dist(source, img2, box, width);
       if (newdist < olddist) {
+         kept++;
          copy(img1, img2, width, box);
       } else {
          copy(img2, img1, width, box);
@@ -122,7 +124,8 @@ int main(int argc, char** argv) {
       }
    }
    stbi_image_free(source);
-   stbi_write_png("out.png", width, height, 3, img2, width * 3);
+   stbi_write_png(output_filename, width, height, 3, img2, width * 3);
    free(img1);
    free(img2);
+   printf("Written to %s. Took %d seconds, kept %d cirlces and discarded %d circles\n", output_filename, time(NULL) - start, kept, iterations - kept);
 }
