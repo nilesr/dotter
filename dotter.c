@@ -75,14 +75,22 @@ uint8_t* copy(uint8_t* source, uint8_t* dest, int width, box_t box) {
 int main(int argc, char** argv) {
    srand(time(NULL));
    char* source_filename = "Pictures/2hu.png";
+   char* output_filename = "out.png";
    int radius = 5;
    int iterations = 100;
    if (argc > 1) {
       source_filename = argv[1];
    }
    if (argc > 2) {
-      iterations = atoi(argv[2]);
+      output_filename = argv[2];
+   }
+   if (argc > 3) {
+      iterations = atoi(argv[3]);
       assert(iterations != 0);
+   }
+   if (argc > 4) {
+      radius = atoi(argv[4]);
+      assert(radius != 0);
    }
    time_t start = time(NULL);
    int width, height, n;
