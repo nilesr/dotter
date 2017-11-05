@@ -76,8 +76,8 @@ uint8_t* copy(uint8_t* source, uint8_t* dest, int width, box_t box) {
 int main(int argc, char** argv) {
    bool make_slices = false;
    srand(time(NULL));
-   char* source_filename = "Pictures/2hu.png";
-   char* output_filename = "out.png";
+   char* source_filename = "input.png";
+   char* output_filename = "output.png";
    int radius = 5;
    int iterations = 100;
    if (argc > 1) {
